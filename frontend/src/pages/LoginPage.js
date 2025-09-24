@@ -159,7 +159,7 @@ const LoginPage = () => {
             username: foundUser.username
           });
           
-          navigate('/');
+          navigate(`/${foundUser.username}`);
         } else {
           setError('Login failed. Please check your credentials.');
         }
