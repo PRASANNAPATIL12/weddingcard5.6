@@ -233,9 +233,9 @@ function App() {
               </>
             } />
           </Routes>
+          </UserDataProvider>
         </Router>
-        </div>
-      </UserDataProvider>
+      </div>
     </ThemeContext.Provider>
   );
 }
