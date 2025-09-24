@@ -80,18 +80,18 @@ function App() {
 
   return (
     <ThemeContext.Provider value={themeContextValue}>
-      <UserDataProvider>
-        <div 
-          className="min-h-screen"
-          style={{
-            background: themes[currentTheme].background,
-            color: themes[currentTheme].text,
-            fontFamily: themes[currentTheme].fontSecondary,
-          }}
-        >
-          <Router>
+      <div 
+        className="min-h-screen"
+        style={{
+          background: themes[currentTheme].background,
+          color: themes[currentTheme].text,
+          fontFamily: themes[currentTheme].fontSecondary,
+        }}
+      >
+        <Router>
+          <UserDataProvider>
             <LeftSidebar />
-          <Routes>
+            <Routes>
             {/* Auth Routes (without navigation) */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
