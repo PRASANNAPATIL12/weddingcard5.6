@@ -132,7 +132,7 @@ const RegisterPage = () => {
             username: formData.username
           });
           
-          navigate('/');
+          navigate(`/${formData.username}`);
         }
       }
       
