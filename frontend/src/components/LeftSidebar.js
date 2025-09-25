@@ -295,7 +295,7 @@ const WeddingPartyManager = ({ weddingData, onSave, theme }) => {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabSwitch(tab.id)}
             className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
               activeTab === tab.id
                 ? 'bg-white shadow-sm'
