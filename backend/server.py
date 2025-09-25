@@ -859,6 +859,46 @@ async def create_guestbook_message(message_data: dict):
     
     return {"success": True, "message": "Guestbook message added successfully", "message_id": guestbook_message.id}
 
+@api_router.post("/guestbook/private")
+async def create_private_guestbook_message(message_data: dict):
+    """Create a private guestbook message for authenticated user's wedding"""
+    session_id = message_data.get('session_id')
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Session ID required for private guestbook"
+        )
+    
+    current_user = await get_current_user_simple(session_id)
+    users_coll, weddings_coll = await get_collections()
+    
+    # Find user's wedding
+    user_wedding = await weddings_coll.find_one({"user_id": current_user.id})
+    if not user_wedding:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User wedding not found"
+        )
+    
+    # Create private guestbook message
+    guestbook_message = GuestbookMessage(
+        wedding_id=user_wedding["id"],
+        name=message_data.get('name', ''),
+        relationship=message_data.get('relationship', ''),
+        message=message_data.get('message', ''),
+        is_public=False  # Always private for this endpoint
+    )
+    
+    # Convert to dict
+    message_dict = guestbook_message.dict()
+    message_dict["created_at"] = message_dict["created_at"].isoformat()
+    
+    # Store message in guestbook collection
+    guestbook_collection = database.guestbook
+    await guestbook_collection.insert_one(message_dict)
+    
+    return {"success": True, "message": "Private guestbook message added successfully", "message_id": guestbook_message.id}
+
 @api_router.get("/guestbook/{wedding_id}")
 async def get_guestbook_messages(wedding_id: str):
     """Get all guestbook messages for a specific wedding"""
