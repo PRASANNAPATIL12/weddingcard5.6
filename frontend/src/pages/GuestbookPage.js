@@ -3,10 +3,10 @@ import { useAppTheme } from '../App';
 import { useUserData } from '../contexts/UserDataContext';
 import { Heart, MessageCircle, User, Send, Star, Loader } from 'lucide-react';
 
-const GuestbookPage = () => {
+const GuestbookPage = ({ isPrivate = false, isDashboard = false }) => {
   const { themes, currentTheme } = useAppTheme();
   const theme = themes[currentTheme];
-  const { weddingData } = useUserData();
+  const { weddingData, sessionId } = useUserData();
   
   const [newMessage, setNewMessage] = useState({
     name: '',
@@ -19,8 +19,8 @@ const GuestbookPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Get wedding ID for API calls
-  const weddingId = weddingData?.id || 'default';
+  // Get wedding ID for API calls - different logic for public vs private
+  const weddingId = isPrivate ? (weddingData?.id || 'default') : 'public';
 
   useEffect(() => {
     fetchMessages();
