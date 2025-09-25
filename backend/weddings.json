@@ -650,7 +650,7 @@
     "id": "246c96f6-7118-40c7-8093-9d628f93a0a9"
   },
   "eafe5ff0-4aea-4d6a-a705-aaab655595ed": {
-    "couple_name_1": "Sarah",
+    "couple_name_1": "Sarahlll",
     "couple_name_2": "Michael",
     "wedding_date": "2025-06-15",
     "venue_name": "Sunset Garden Estate",
@@ -674,6 +674,12 @@
         "title": "Moving In Together",
         "description": "After a year of long-distance dating, we decided to take the next step and move in together. Our first apartment was tiny but filled with so much love.",
         "image": "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop"
+      },
+      {
+        "year": "2023",
+        "title": "The Proposal",
+        "description": "Michael proposed during our vacation in Santorini, Greece. As the sun set over the Aegean Sea, he got down on one knee with Sarah's grandmother's ring.",
+        "image": "https://images.unsplash.com/photo-1597248374161-426f3d6f1f6b?w=600&h=400&fit=crop"
       },
       {
         "year": "2025",
@@ -907,7 +913,7 @@
       }
     ],
     "theme": "classic",
-    "updated_at": "2025-09-25T04:20:34.258175",
+    "updated_at": "2025-09-25T12:41:47.030515",
     "user_id": "78ab1adb-86bf-4575-8655-93a0d581c234",
     "id": "eafe5ff0-4aea-4d6a-a705-aaab655595ed",
     "shareable_id": "7703da81",
@@ -1735,5 +1741,67 @@
     "updated_at": "2025-09-24T19:59:49.992177",
     "shareable_id": "7fa428a5",
     "_id": "68d44db56b3adcdc805454bc"
+  },
+  "b18752f4-ec3b-4857-8a11-817f67947089": {
+    "id": "b18752f4-ec3b-4857-8a11-817f67947089",
+    "user_id": "91340242-7eb8-4942-90a1-f763da3f0ea9",
+    "couple_name_1": "Sarah",
+    "couple_name_2": "Michael",
+    "wedding_date": "2025-06-15",
+    "venue_name": "Sunset Garden Estate",
+    "venue_location": "Sunset Garden Estate \u2022 Napa Valley, California",
+    "their_story": "We can't wait to celebrate our love story with the people who matter most to us. Join us for an unforgettable evening of joy, laughter, and new beginnings.",
+    "story_timeline": [
+      {
+        "year": "2019",
+        "title": "First Meeting",
+        "description": "We met at a coffee shop in downtown San Francisco on a rainy Tuesday morning.",
+        "image": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&h=400&fit=crop"
+      }
+    ],
+    "schedule_events": [
+      {
+        "time": "2:00 PM",
+        "title": "Guests Arrival & Welcome",
+        "description": "Please arrive by 2:00 PM for welcome drinks and mingling.",
+        "location": "Sunset Garden Estate - Main Entrance",
+        "duration": "30 minutes",
+        "highlight": false
+      }
+    ],
+    "gallery_photos": [],
+    "bridal_party": [
+      {
+        "name": "Emma Johnson",
+        "designation": "Maid of Honor",
+        "description": "Best friend since college",
+        "photo": "https://images.unsplash.com/photo-1494790108755-2616b612b789?w=300"
+      }
+    ],
+    "groom_party": [
+      {
+        "name": "David Wilson",
+        "designation": "Best Man",
+        "description": "Brother and best friend",
+        "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300"
+      }
+    ],
+    "special_roles": [
+      {
+        "name": "Grace Thompson",
+        "designation": "Flower Girl",
+        "description": "Adorable niece",
+        "photo": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300"
+      }
+    ],
+    "registry_items": [],
+    "honeymoon_fund": {},
+    "faqs": [],
+    "theme": "classic",
+    "rsvp_responses": [],
+    "created_at": "2025-09-25T11:26:48.318386",
+    "updated_at": "2025-09-25T11:27:07.505015",
+    "shareable_id": "04a74629",
+    "_id": "68d526f80c2046efc6e9ada7"
   }
 }
