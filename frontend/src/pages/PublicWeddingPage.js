@@ -680,7 +680,7 @@ const PublicWeddingPage = () => {
                       <div key={index} className="flex items-center space-x-4 p-4 bg-white/30 backdrop-blur-lg rounded-2xl">
                         {member.photo && (
                           <img
-                            src={member.photo.url}
+                            src={typeof member.photo === 'string' ? member.photo : member.photo.url}
                             alt={member.name}
                             className="w-16 h-16 object-cover rounded-full flex-shrink-0"
                           />
