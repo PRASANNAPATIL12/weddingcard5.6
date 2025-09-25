@@ -159,6 +159,20 @@ const WeddingPartyManager = ({ weddingData, onSave, theme }) => {
     setIsAddingNew(false);
   };
 
+  const handleTabSwitch = (newTab) => {
+    // Don't switch tabs if user is currently editing - ask for confirmation
+    if (editingPerson) {
+      const shouldSwitch = window.confirm('You have unsaved changes. Do you want to discard them and switch tabs?');
+      if (!shouldSwitch) return;
+      
+      // User chose to discard changes
+      setEditingPerson(null);
+      setIsAddingNew(false);
+    }
+    
+    setActiveTab(newTab);
+  };
+
   const PersonCard = ({ person }) => (
     <div className="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row gap-4 items-start">
       <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
