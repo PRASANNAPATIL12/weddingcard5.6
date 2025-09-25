@@ -131,11 +131,15 @@ const WeddingPartyManager = ({ weddingData, onSave, theme }) => {
     setEditingPerson(null);
     setIsAddingNew(false);
     
-    // Save to backend
+    // Save to backend immediately when user clicks save
+    saveAllPartyDataToBackend(activeTab, updatedData);
+  };
+
+  const saveAllPartyDataToBackend = (changedTab, updatedData) => {
     const partyData = {
-      bridal_party: activeTab === 'bridal' ? updatedData : bridalParty,
-      groom_party: activeTab === 'groom' ? updatedData : groomParty,
-      special_roles: activeTab === 'special' ? updatedData : specialRoles
+      bridal_party: changedTab === 'bridal' ? updatedData : bridalParty,
+      groom_party: changedTab === 'groom' ? updatedData : groomParty,
+      special_roles: changedTab === 'special' ? updatedData : specialRoles
     };
     onSave(partyData);
   };
