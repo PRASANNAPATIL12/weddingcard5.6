@@ -1764,16 +1764,37 @@
       }
     ],
     "gallery_photos": [],
-    "bridal_party": [],
-    "groom_party": [],
-    "special_roles": [],
+    "bridal_party": [
+      {
+        "name": "Emma Johnson",
+        "designation": "Maid of Honor",
+        "description": "Best friend since college",
+        "photo": "https://images.unsplash.com/photo-1494790108755-2616b612b789?w=300"
+      }
+    ],
+    "groom_party": [
+      {
+        "name": "David Wilson",
+        "designation": "Best Man",
+        "description": "Brother and best friend",
+        "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300"
+      }
+    ],
+    "special_roles": [
+      {
+        "name": "Grace Thompson",
+        "designation": "Flower Girl",
+        "description": "Adorable niece",
+        "photo": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300"
+      }
+    ],
     "registry_items": [],
     "honeymoon_fund": {},
     "faqs": [],
     "theme": "classic",
     "rsvp_responses": [],
     "created_at": "2025-09-25T11:26:48.318386",
-    "updated_at": "2025-09-25T11:26:48.318388",
+    "updated_at": "2025-09-25T11:27:07.505015",
     "shareable_id": "04a74629",
     "_id": "68d526f80c2046efc6e9ada7"
   }
