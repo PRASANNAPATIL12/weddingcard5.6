@@ -340,3 +340,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Successfully cloned GitHub repo and verified all backend APIs working. Wedding Party and Guestbook APIs confirmed functional via curl testing and public page display. Dashboard session persistence issue (documented) prevents full frontend dashboard testing. All backend functionality implemented and working correctly. Public pages display wedding party data properly."
+  - agent: "testing"
+    message: "Completed comprehensive testing of Wedding Card application. CRITICAL FINDINGS: 1) Wedding Party section not displaying Emma Johnson/David Wilson - API endpoints returning 404 errors for /api/wedding/user/party, 2) Guestbook functionality working perfectly - form submission and display successful, 3) Theme switching works on public pages, 4) Registration page redirects to public page instead of showing registration form, 5) Login authentication fails with 401 errors for user 'frontendtestuser'. Public wedding page loads correctly with Sarah & Michael data. Backend API integration issues need investigation."
