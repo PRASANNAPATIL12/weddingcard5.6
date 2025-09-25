@@ -876,6 +876,43 @@ async def get_guestbook_messages(wedding_id: str):
     
     return {"success": True, "messages": response_data, "total_count": len(response_data)}
 
+@api_router.get("/guestbook/public/messages")
+async def get_public_guestbook_messages():
+    """Get all public guestbook messages (for landing page)"""
+    users_coll, weddings_coll = await get_collections()
+    
+    # Get public messages only
+    guestbook_collection = database.guestbook
+    messages = await guestbook_collection.find({"is_public": True}).sort("created_at", -1).to_list(length=None)
+    
+    # Remove _id from response
+    response_data = []
+    for msg in messages:
+        clean_msg = {k: v for k, v in msg.items() if k != "_id"}
+        response_data.append(clean_msg)
+    
+    return {"success": True, "messages": response_data, "total_count": len(response_data)}
+
+@api_router.get("/guestbook/private/{user_wedding_id}")
+async def get_private_guestbook_messages(user_wedding_id: str):
+    """Get private guestbook messages for a specific user's wedding (dashboard)"""
+    users_coll, weddings_coll = await get_collections()
+    
+    # Get private messages for this specific wedding
+    guestbook_collection = database.guestbook
+    messages = await guestbook_collection.find({
+        "wedding_id": user_wedding_id, 
+        "is_public": False
+    }).sort("created_at", -1).to_list(length=None)
+    
+    # Remove _id from response
+    response_data = []
+    for msg in messages:
+        clean_msg = {k: v for k, v in msg.items() if k != "_id"}
+        response_data.append(clean_msg)
+    
+    return {"success": True, "messages": response_data, "total_count": len(response_data)}
+
 @api_router.get("/guestbook/shareable/{shareable_id}")  
 async def get_guestbook_by_shareable_id(shareable_id: str):
     """Get guestbook messages using shareable ID"""
