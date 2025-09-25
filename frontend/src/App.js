@@ -164,7 +164,7 @@ function App() {
               <>
                 <Navigation />
                 <FloatingTemplateButton />
-                <GuestbookPage />
+                <GuestbookPage isPrivate={false} isDashboard={false} />
               </>
             } />
 
