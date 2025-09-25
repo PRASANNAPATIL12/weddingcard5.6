@@ -77,6 +77,246 @@ import {
   X
 } from 'lucide-react';
 
+// Our Story Manager Component
+const OurStoryManager = ({ weddingData, onSave, theme }) => {
+  const [storyTimeline, setStoryTimeline] = useState(weddingData?.story_timeline || []);
+  const [editingStage, setEditingStage] = useState(null);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+
+  const handleAddStage = () => {
+    setEditingStage({
+      id: Date.now().toString(),
+      year: new Date().getFullYear().toString(),
+      title: '',
+      description: '',
+      image: ''
+    });
+    setIsAddingNew(true);
+  };
+
+  const handleEditStage = (stage, index) => {
+    setEditingStage({ ...stage, index });
+    setIsAddingNew(false);
+  };
+
+  const handleSaveStage = () => {
+    if (!editingStage.year || !editingStage.title) {
+      alert('Please fill in year and title fields');
+      return;
+    }
+
+    const updatedTimeline = [...storyTimeline];
+    
+    if (isAddingNew) {
+      updatedTimeline.push({
+        year: editingStage.year,
+        title: editingStage.title,
+        description: editingStage.description,
+        image: editingStage.image
+      });
+    } else {
+      const index = editingStage.index;
+      if (index !== undefined && updatedTimeline[index]) {
+        updatedTimeline[index] = {
+          year: editingStage.year,
+          title: editingStage.title,
+          description: editingStage.description,
+          image: editingStage.image
+        };
+      }
+    }
+
+    setStoryTimeline(updatedTimeline);
+    setEditingStage(null);
+    setIsAddingNew(false);
+    
+    // Save to backend immediately when user clicks save
+    onSave({ story_timeline: updatedTimeline });
+  };
+
+  const handleDeleteStage = (index) => {
+    if (!window.confirm('Are you sure you want to remove this story stage?')) return;
+    
+    const updatedTimeline = storyTimeline.filter((_, i) => i !== index);
+    setStoryTimeline(updatedTimeline);
+    
+    // Save to backend immediately after confirmation
+    onSave({ story_timeline: updatedTimeline });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingStage(null);
+    setIsAddingNew(false);
+  };
+
+  const StoryCard = ({ stage, index }) => (
+    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col gap-4">
+      <div className="flex justify-between items-start">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="bg-golden text-white px-3 py-1 rounded-full text-sm font-medium" style={{ backgroundColor: theme.primary }}>
+              {stage.year}
+            </span>
+            <h4 className="text-lg font-semibold" style={{ color: theme.text }}>{stage.title}</h4>
+          </div>
+          <p className="text-sm mb-3" style={{ color: theme.textLight }}>{stage.description}</p>
+          
+          {stage.image && (
+            <div className="w-full h-32 rounded-lg overflow-hidden bg-gray-200">
+              <img 
+                src={stage.image} 
+                alt={stage.title}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%236b7280">No Image</text></svg>';
+                }}
+              />
+            </div>
+          )}
+        </div>
+        
+        <div className="flex gap-2 ml-4">
+          <button
+            onClick={() => handleEditStage(stage, index)}
+            className="p-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-colors"
+            title="Edit this story stage"
+          >
+            <Edit3 className="w-4 h-4 text-blue-600" />
+          </button>
+          <button
+            onClick={() => handleDeleteStage(index)}
+            className="p-2 rounded-lg bg-red-100 hover:bg-red-200 transition-colors"
+            title="Delete this story stage"
+          >
+            <X className="w-4 h-4 text-red-600" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const StoryForm = () => (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h4 className="text-lg font-semibold mb-4" style={{ color: theme.primary }}>
+        {isAddingNew ? 'Add New Story Stage' : 'Edit Story Stage'}
+      </h4>
+      
+      <div className="space-y-4">
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+              Year *
+            </label>
+            <input
+              type="text"
+              value={editingStage?.year || ''}
+              onChange={(e) => setEditingStage({ ...editingStage, year: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="2019"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+              Title *
+            </label>
+            <input
+              type="text"
+              value={editingStage?.title || ''}
+              onChange={(e) => setEditingStage({ ...editingStage, title: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="e.g., First Meeting, Engagement, etc."
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Description
+          </label>
+          <textarea
+            value={editingStage?.description || ''}
+            onChange={(e) => setEditingStage({ ...editingStage, description: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="3"
+            placeholder="Tell the story of this milestone..."
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Image URL
+          </label>
+          <input
+            type="url"
+            value={editingStage?.image || ''}
+            onChange={(e) => setEditingStage({ ...editingStage, image: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="https://example.com/photo.jpg"
+          />
+          <p className="text-xs mt-1" style={{ color: theme.textLight }}>
+            Use a direct link to an image (jpg, png, etc.)
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex gap-3 mt-6">
+        <button
+          onClick={handleSaveStage}
+          className="px-4 py-2 rounded-lg text-white font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+          style={{ backgroundColor: theme.primary }}
+        >
+          <Save className="w-4 h-4" />
+          Save
+        </button>
+        <button
+          onClick={handleCancelEdit}
+          className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      <p className="text-sm" style={{ color: theme.textLight }}>
+        Create a beautiful timeline of your love story. Each stage represents a milestone in your relationship.
+      </p>
+
+      {/* Add New Stage Button */}
+      {!editingStage && (
+        <button
+          onClick={handleAddStage}
+          className="w-full py-3 border-2 border-dashed rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+          style={{ borderColor: theme.primary, color: theme.primary }}
+        >
+          <Plus className="w-5 h-5" />
+          Add New Story Stage
+        </button>
+      )}
+
+      {/* Story Form (Edit/Add) */}
+      {editingStage && <StoryForm />}
+
+      {/* Story Timeline */}
+      <div className="space-y-4">
+        {storyTimeline.length === 0 && !editingStage ? (
+          <div className="text-center py-8">
+            <Heart className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-500">No story stages added yet</p>
+          </div>
+        ) : (
+          storyTimeline.map((stage, index) => (
+            <StoryCard key={index} stage={stage} index={index} />
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
 // Wedding Party Manager Component
 const WeddingPartyManager = ({ weddingData, onSave, theme }) => {
   const [activeTab, setActiveTab] = useState('bridal');
