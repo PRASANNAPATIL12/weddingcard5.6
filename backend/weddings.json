@@ -650,7 +650,7 @@
     "id": "246c96f6-7118-40c7-8093-9d628f93a0a9"
   },
   "eafe5ff0-4aea-4d6a-a705-aaab655595ed": {
-    "couple_name_1": "Sarah",
+    "couple_name_1": "Sarahlll",
     "couple_name_2": "Michael",
     "wedding_date": "2025-06-15",
     "venue_name": "Sunset Garden Estate",
@@ -674,6 +674,12 @@
         "title": "Moving In Together",
         "description": "After a year of long-distance dating, we decided to take the next step and move in together. Our first apartment was tiny but filled with so much love.",
         "image": "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop"
+      },
+      {
+        "year": "2023",
+        "title": "The Proposal",
+        "description": "Michael proposed during our vacation in Santorini, Greece. As the sun set over the Aegean Sea, he got down on one knee with Sarah's grandmother's ring.",
+        "image": "https://images.unsplash.com/photo-1597248374161-426f3d6f1f6b?w=600&h=400&fit=crop"
       },
       {
         "year": "2025",
@@ -907,7 +913,7 @@
       }
     ],
     "theme": "classic",
-    "updated_at": "2025-09-25T04:20:34.258175",
+    "updated_at": "2025-09-25T12:41:47.030515",
     "user_id": "78ab1adb-86bf-4575-8655-93a0d581c234",
     "id": "eafe5ff0-4aea-4d6a-a705-aaab655595ed",
     "shareable_id": "7703da81",
