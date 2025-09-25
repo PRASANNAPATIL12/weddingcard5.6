@@ -1130,20 +1130,12 @@ const FormPopup = ({ sectionId, onClose, theme, modalRef }) => {
               </div>
             </div>
             
-            <div className="text-center py-12">
-              <div 
-                className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
-                style={{ background: theme.gradientAccent }}
-              >
-                <Users className="w-8 h-8" style={{ color: theme.primary }} />
-              </div>
-              <p className="text-lg mb-2" style={{ color: theme.text }}>
-                Wedding Party Management
-              </p>
-              <p className="text-sm" style={{ color: theme.textLight }}>
-                Add and edit information about your bridal party and groomsmen, including photos, names, roles, and relationships.
-              </p>
-            </div>
+            {/* Wedding Party Management Interface */}
+            <WeddingPartyManager 
+              weddingData={weddingData}
+              onSave={saveWeddingData}
+              theme={theme}
+            />
           </div>
         );
 
