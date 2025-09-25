@@ -387,9 +387,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Verify Dashboard Theme Switching functionality when session persistence is working"
-    - "Test Dashboard Wedding Party management interface"
+    - "Fix Wedding Party API endpoints - 404 errors on /api/wedding/user/party"
+    - "Fix Registration page routing - redirects instead of showing form"
+    - "Fix Login authentication - 401 errors for valid users"
   stuck_tasks:
+    - "Wedding Party Section Display"
+    - "User Registration Flow" 
+    - "User Login Flow"
     - "Dashboard Session Persistence (known issue from documentation)"
   test_all: false
   test_priority: "high_first"
