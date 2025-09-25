@@ -32,7 +32,19 @@ const GuestbookPage = ({ isPrivate = false, isDashboard = false }) => {
     
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-      const response = await fetch(`${backendUrl}/api/guestbook/${weddingId}`);
+      
+      let response;
+      if (isPrivate && isDashboard) {
+        // Private dashboard guestbook - get messages for user's specific wedding
+        response = await fetch(`${backendUrl}/api/guestbook/private/${weddingId}`);
+      } else if (isPrivate) {
+        // Private wedding page (shareable link) - get messages for specific wedding
+        response = await fetch(`${backendUrl}/api/guestbook/${weddingId}`);
+      } else {
+        // Public landing page guestbook - get all public messages
+        response = await fetch(`${backendUrl}/api/guestbook/public/messages`);
+      }
+      
       const data = await response.json();
       
       if (data.success) {
