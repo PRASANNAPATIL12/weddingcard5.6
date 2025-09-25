@@ -835,12 +835,18 @@ async def create_guestbook_message(message_data: dict):
     """Create a new guestbook message"""
     users_coll, weddings_coll = await get_collections()
     
+    # Determine if this is a public or private message
+    # Public messages: wedding_id is 'public' or 'default'
+    # Private messages: wedding_id is actual user's wedding ID
+    is_public = message_data.get('wedding_id', '') in ['public', 'default', ''] or message_data.get('is_public', True)
+    
     # Create guestbook message
     guestbook_message = GuestbookMessage(
-        wedding_id=message_data.get('wedding_id', ''),
+        wedding_id=message_data.get('wedding_id', 'public'),
         name=message_data.get('name', ''),
         relationship=message_data.get('relationship', ''),
-        message=message_data.get('message', '')
+        message=message_data.get('message', ''),
+        is_public=is_public
     )
     
     # Convert to dict
