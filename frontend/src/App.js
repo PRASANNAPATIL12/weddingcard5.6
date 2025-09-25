@@ -229,7 +229,7 @@ function App() {
               <>
                 <Navigation />
                 <FloatingTemplateButton />
-                <GuestbookPage isUserPage={true} />
+                <GuestbookPage isPrivate={true} isDashboard={false} />
               </>
             } />
           </Routes>
