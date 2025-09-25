@@ -286,17 +286,32 @@ backend:
         comment: "Backend has complete guestbook APIs: POST /api/guestbook, GET /api/guestbook/{wedding_id}, GET /api/guestbook/shareable/{shareable_id}. Successfully tested - messages stored and retrieved from MongoDB."
 
 frontend:
-  - task: "Wedding Party Form Implementation"
+  - task: "Public Wedding Page Display"
     implemented: true
     working: true
-    file: "frontend/src/pages/DashboardPage.js"
+    file: "frontend/src/pages/PublicWeddingPage.js"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
+        agent: "testing"
+        comment: "Public wedding page loads correctly at /share/04a74629. Displays Sarah & Michael couple names, wedding date (June 15, 2025), venue (Sunset Garden Estate, Napa Valley), and countdown timer. Navigation works properly between sections."
+
+  - task: "Wedding Party Section Display"
+    implemented: true
+    working: false
+    file: "frontend/src/pages/PublicWeddingPage.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
         agent: "main"
-        comment: "Public wedding pages display wedding party data correctly. Successfully shows bridal party (Emma Johnson - Maid of Honor) and groom party (David Wilson - Best Man) with proper formatting and photos. Backend integration confirmed working."
+        comment: "Dashboard already has WeddingPartyFormContent component with add/remove/edit functionality. Need to verify if it's fully functional and user-friendly as per requirements."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL: Wedding Party section not displaying Emma Johnson (Maid of Honor) or David Wilson (Best Man). API calls to /api/wedding/user/party return 404 errors. The section loads but shows no wedding party members. Backend API integration failing."
 
   - task: "Guestbook Page Functionality"
     implemented: true  
@@ -306,9 +321,48 @@ frontend:
     priority: "high"
     needs_retesting: false
     status_history:
-      - working: true
+      - working: false
         agent: "main"
-        comment: "Guestbook page loads correctly on public wedding pages. Backend API successfully stores and retrieves messages. Guestbook form exists and integrates with MongoDB."
+        comment: "GuestbookPage has full functionality for submitting and displaying messages. Uses API endpoints. Need to test if messages display correctly."
+      - working: true
+        agent: "testing"
+        comment: "Guestbook functionality working perfectly. Form submission successful with test data (John Smith, Friend, congratulatory message). Message appears immediately in 'Messages from Our Loved Ones' section. API integration working correctly."
+
+  - task: "Theme Switching on Public Pages"
+    implemented: true
+    working: true
+    file: "frontend/src/components/FloatingNavbar.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Theme switching works correctly on public pages. Desktop theme selector allows switching between Classic, Modern, and Boho themes. Visual changes apply immediately. Theme selector found in navigation dropdown."
+
+  - task: "User Registration Flow"
+    implemented: true
+    working: false
+    file: "frontend/src/pages/RegisterPage.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL: Registration page at /register redirects to public wedding page instead of showing registration form. No input fields or Create Account button visible. Registration functionality not accessible to users."
+
+  - task: "User Login Flow"
+    implemented: true
+    working: false
+    file: "frontend/src/pages/LoginPage.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Login page loads correctly with form fields, but authentication fails. Test user 'frontendtestuser' with password 'test123' returns 401 Unauthorized error from /api/auth/login. Error message: 'Incorrect username or password'. Backend authentication not working."
 
   - task: "Dashboard Theme Switching"
     implemented: true
@@ -318,6 +372,9 @@ frontend:
     priority: "medium"
     needs_retesting: true
     status_history:
+      - working: false
+        agent: "main"
+        comment: "Theme switching exists in dashboard theme form. Need to verify instant application like navbar theme switching."
       - working: false
         agent: "main"
         comment: "Dashboard session persistence issue prevents full testing of theme switching. Known issue from documentation - users get logged out on dashboard refresh. Theme switching exists but needs verification when session issue is resolved."
