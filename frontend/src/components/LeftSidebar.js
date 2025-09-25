@@ -150,13 +150,8 @@ const WeddingPartyManager = ({ weddingData, onSave, theme }) => {
     const updatedData = activeTabData.data.filter(p => p.id !== personId);
     activeTabData.setter(updatedData);
     
-    // Save to backend
-    const partyData = {
-      bridal_party: activeTab === 'bridal' ? updatedData : bridalParty,
-      groom_party: activeTab === 'groom' ? updatedData : groomParty,
-      special_roles: activeTab === 'special' ? updatedData : specialRoles
-    };
-    onSave(partyData);
+    // Save to backend immediately after confirmation
+    saveAllPartyDataToBackend(activeTab, updatedData);
   };
 
   const handleCancelEdit = () => {
