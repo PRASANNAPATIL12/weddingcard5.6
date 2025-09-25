@@ -541,6 +541,26 @@ const PublicWeddingPage = () => {
     );
   };
 
+  // Guestbook Section Component  
+  const GuestbookSection = () => {
+    const GuestbookPage = React.lazy(() => import('./GuestbookPage'));
+    
+    return (
+      <div className="pt-24 pb-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <React.Suspense fallback={
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin w-8 h-8 border-4 border-current border-t-transparent rounded-full" style={{ color: theme.accent }}></div>
+              <span className="ml-3 text-lg" style={{ color: theme.text }}>Loading guestbook...</span>
+            </div>
+          }>
+            <GuestbookPage />
+          </React.Suspense>
+        </div>
+      </div>
+    );
+  };
+
   // Render content based on active section
   const renderActiveSection = () => {
     switch (activeSection) {
@@ -556,6 +576,8 @@ const PublicWeddingPage = () => {
         return <GallerySection />;
       case 'party':
         return <PartySection />;
+      case 'guestbook':
+        return <GuestbookSection />;
       case 'faq':
         return <FAQSection />;
       default:
