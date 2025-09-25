@@ -77,6 +77,258 @@ import {
   X
 } from 'lucide-react';
 
+// Wedding Party Manager Component
+const WeddingPartyManager = ({ weddingData, onSave, theme }) => {
+  const [activeTab, setActiveTab] = useState('bridal');
+  const [bridalParty, setBridalParty] = useState(weddingData?.bridal_party || []);
+  const [groomParty, setGroomParty] = useState(weddingData?.groom_party || []);
+  const [specialRoles, setSpecialRoles] = useState(weddingData?.special_roles || []);
+  const [editingPerson, setEditingPerson] = useState(null);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+
+  const tabs = [
+    { id: 'bridal', label: 'Bride Party', data: bridalParty, setter: setBridalParty },
+    { id: 'groom', label: 'Groom Party', data: groomParty, setter: setGroomParty },
+    { id: 'special', label: 'Special Roles', data: specialRoles, setter: setSpecialRoles }
+  ];
+
+  const activeTabData = tabs.find(tab => tab.id === activeTab);
+
+  const handleAddPerson = () => {
+    setEditingPerson({
+      id: Date.now().toString(),
+      name: '',
+      designation: '',
+      description: '',
+      photo: ''
+    });
+    setIsAddingNew(true);
+  };
+
+  const handleEditPerson = (person) => {
+    setEditingPerson({ ...person });
+    setIsAddingNew(false);
+  };
+
+  const handleSavePerson = () => {
+    if (!editingPerson.name || !editingPerson.designation) {
+      alert('Please fill in name and role fields');
+      return;
+    }
+
+    const updatedData = [...activeTabData.data];
+    
+    if (isAddingNew) {
+      updatedData.push(editingPerson);
+    } else {
+      const index = updatedData.findIndex(p => p.id === editingPerson.id);
+      if (index !== -1) {
+        updatedData[index] = editingPerson;
+      }
+    }
+
+    activeTabData.setter(updatedData);
+    setEditingPerson(null);
+    setIsAddingNew(false);
+    
+    // Save to backend
+    const partyData = {
+      bridal_party: activeTab === 'bridal' ? updatedData : bridalParty,
+      groom_party: activeTab === 'groom' ? updatedData : groomParty,
+      special_roles: activeTab === 'special' ? updatedData : specialRoles
+    };
+    onSave(partyData);
+  };
+
+  const handleDeletePerson = (personId) => {
+    if (!window.confirm('Are you sure you want to remove this person?')) return;
+    
+    const updatedData = activeTabData.data.filter(p => p.id !== personId);
+    activeTabData.setter(updatedData);
+    
+    // Save to backend
+    const partyData = {
+      bridal_party: activeTab === 'bridal' ? updatedData : bridalParty,
+      groom_party: activeTab === 'groom' ? updatedData : groomParty,
+      special_roles: activeTab === 'special' ? updatedData : specialRoles
+    };
+    onSave(partyData);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPerson(null);
+    setIsAddingNew(false);
+  };
+
+  const PersonCard = ({ person }) => (
+    <div className="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row gap-4 items-start">
+      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+        {person.photo ? (
+          <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-300">
+            <Users className="w-8 h-8 text-gray-500" />
+          </div>
+        )}
+      </div>
+      <div className="flex-1">
+        <h4 className="font-semibold text-lg" style={{ color: theme.text }}>{person.name}</h4>
+        <p className="font-medium" style={{ color: theme.primary }}>{person.designation}</p>
+        <p className="text-sm mt-1" style={{ color: theme.textLight }}>{person.description}</p>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleEditPerson(person)}
+          className="p-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-colors"
+        >
+          <Edit3 className="w-4 h-4 text-blue-600" />
+        </button>
+        <button
+          onClick={() => handleDeletePerson(person.id)}
+          className="p-2 rounded-lg bg-red-100 hover:bg-red-200 transition-colors"
+        >
+          <X className="w-4 h-4 text-red-600" />
+        </button>
+      </div>
+    </div>
+  );
+
+  const PersonForm = () => (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h4 className="text-lg font-semibold mb-4" style={{ color: theme.primary }}>
+        {isAddingNew ? 'Add New Person' : 'Edit Person'}
+      </h4>
+      
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Name *
+          </label>
+          <input
+            type="text"
+            value={editingPerson?.name || ''}
+            onChange={(e) => setEditingPerson({ ...editingPerson, name: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Enter full name"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Role/Title *
+          </label>
+          <input
+            type="text"
+            value={editingPerson?.designation || ''}
+            onChange={(e) => setEditingPerson({ ...editingPerson, designation: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="e.g., Maid of Honor, Best Man, Flower Girl"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Relationship/Description
+          </label>
+          <textarea
+            value={editingPerson?.description || ''}
+            onChange={(e) => setEditingPerson({ ...editingPerson, description: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="3"
+            placeholder="e.g., Best friend since college, Sister, etc."
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Photo URL
+          </label>
+          <input
+            type="url"
+            value={editingPerson?.photo || ''}
+            onChange={(e) => setEditingPerson({ ...editingPerson, photo: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="https://example.com/photo.jpg"
+          />
+          <p className="text-xs mt-1" style={{ color: theme.textLight }}>
+            Use a direct link to an image (jpg, png, etc.)
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex gap-3 mt-6">
+        <button
+          onClick={handleSavePerson}
+          className="px-4 py-2 rounded-lg text-white font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+          style={{ backgroundColor: theme.primary }}
+        >
+          <Save className="w-4 h-4" />
+          Save
+        </button>
+        <button
+          onClick={handleCancelEdit}
+          className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Tab Navigation */}
+      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+              activeTab === tab.id
+                ? 'bg-white shadow-sm'
+                : 'hover:bg-gray-200'
+            }`}
+            style={{
+              color: activeTab === tab.id ? theme.primary : theme.textLight
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Add New Person Button */}
+      {!editingPerson && (
+        <button
+          onClick={handleAddPerson}
+          className="w-full py-3 border-2 border-dashed rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+          style={{ borderColor: theme.primary, color: theme.primary }}
+        >
+          <Plus className="w-5 h-5" />
+          Add Person to {activeTabData.label}
+        </button>
+      )}
+
+      {/* Person Form (Edit/Add) */}
+      {editingPerson && <PersonForm />}
+
+      {/* People List */}
+      <div className="space-y-4">
+        {activeTabData.data.length === 0 && !editingPerson ? (
+          <div className="text-center py-8">
+            <Users className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-500">No people added to {activeTabData.label} yet</p>
+          </div>
+        ) : (
+          activeTabData.data.map((person) => (
+            <PersonCard key={person.id || person.name} person={person} />
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
 const LeftSidebar = () => {
   const { themes, currentTheme } = useAppTheme();
   const theme = themes[currentTheme];
