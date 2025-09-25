@@ -103,6 +103,93 @@
 #====================================================================================================
 
 user_problem_statement: |
+  Clone GitHub repository https://github.com/PRASANNAPATIL12/weddingcard5.6.git, create branch 'feat/route', 
+  and implement two main features while keeping everything exactly as it is:
+  1. **Guestbook Separation**: Separate public landing page guestbook from private dashboard guestbook
+  2. **Wedding Party Management**: Full implementation with bride party, groom party, and special roles sections
+  
+backend:
+  - task: "Guestbook API Enhancement - Public vs Private"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Enhanced GuestbookMessage model with is_public field, added separate endpoints for public/private guestbook messages, implemented /api/guestbook/public/messages and /api/guestbook/private endpoints"
+
+  - task: "Wedding Party API Enhancement" 
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Wedding party API endpoints already existed and working. Supports bridal_party, groom_party, and special_roles with proper CRUD operations"
+
+frontend:
+  - task: "Guestbook Component Separation Logic"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/GuestbookPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated GuestbookPage to accept isPrivate and isDashboard props, implemented different API call logic based on context (public landing vs private dashboard vs shareable links)"
+
+  - task: "Wedding Party Management Interface"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/LeftSidebar.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Successfully implemented WeddingPartyManager component with three tabs (Bride Party, Groom Party, Special Roles), add/edit/delete functionality, form with name, role, description, and photo URL fields. Interface is responsive and working perfectly."
+
+  - task: "Route Updates for Guestbook Context"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated App.js routes to pass appropriate props to GuestbookPage - public for landing page, private for shareable links"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Guestbook API Enhancement - Public vs Private"
+    - "Guestbook Component Separation Logic" 
+    - "Wedding Party API Enhancement"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Successfully implemented both requested features. Wedding Party Management is complete and working with full CRUD interface. Guestbook separation is implemented but needs testing to verify the public vs private message separation is working correctly. Ready for comprehensive testing of both backend APIs and frontend functionality."
+
+user_problem_statement: |
   User requested to clone a GitHub repository (https://github.com/PRASANNAPATIL12/weddingcard5.5.git) 
   and create a branch 'feat/route', then implement the following features:
   
