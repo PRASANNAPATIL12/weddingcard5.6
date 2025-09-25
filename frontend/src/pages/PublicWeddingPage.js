@@ -554,7 +554,7 @@ const PublicWeddingPage = () => {
               <span className="ml-3 text-lg" style={{ color: theme.text }}>Loading guestbook...</span>
             </div>
           }>
-            <GuestbookPage />
+            <GuestbookPage isPrivate={true} isDashboard={false} />
           </React.Suspense>
         </div>
       </div>
