@@ -676,12 +676,6 @@
         "image": "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop"
       },
       {
-        "year": "2023",
-        "title": "The Proposal",
-        "description": "Michael proposed during our vacation in Santorini, Greece. As the sun set over the Aegean Sea, he got down on one knee with Sarah's grandmother's ring.",
-        "image": "https://images.unsplash.com/photo-1597248374161-426f3d6f1f6b?w=600&h=400&fit=crop"
-      },
-      {
         "year": "2025",
         "title": "Our Wedding Day",
         "description": "And now, we're ready to say 'I do' surrounded by our family and friends. This is just the beginning of our beautiful journey together.",
@@ -912,8 +906,8 @@
         ]
       }
     ],
-    "theme": "boho",
-    "updated_at": "2025-09-24T19:08:11.163271",
+    "theme": "classic",
+    "updated_at": "2025-09-25T04:20:34.258175",
     "user_id": "78ab1adb-86bf-4575-8655-93a0d581c234",
     "id": "eafe5ff0-4aea-4d6a-a705-aaab655595ed",
     "shareable_id": "7703da81",
