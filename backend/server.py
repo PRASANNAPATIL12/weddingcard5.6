@@ -826,6 +826,7 @@ class GuestbookMessage(BaseModel):
     name: str
     relationship: Optional[str] = ""
     message: str
+    is_public: bool = True  # True for public landing page, False for private dashboard
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 # Guestbook Endpoints
