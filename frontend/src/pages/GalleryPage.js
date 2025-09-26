@@ -226,7 +226,15 @@ const GalleryPage = () => {
               />
               
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-2xl">
-                <h3 className="text-white text-xl font-semibold">{selectedImage.title}</h3>
+                <h3 className="text-white text-xl font-semibold mb-2">{selectedImage.title}</h3>
+                {selectedImage.description && (
+                  <p className="text-gray-200 text-sm mb-2">{selectedImage.description}</p>
+                )}
+                {selectedImage.eventMessage && (
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                    <p className="text-white text-sm italic">"{selectedImage.eventMessage}"</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
