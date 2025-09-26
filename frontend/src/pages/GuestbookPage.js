@@ -3,10 +3,10 @@ import { useAppTheme } from '../App';
 import { useUserData } from '../contexts/UserDataContext';
 import { Heart, MessageCircle, User, Send, Star, Loader } from 'lucide-react';
 
-const GuestbookPage = () => {
+const GuestbookPage = ({ isPrivate = false, isDashboard = false }) => {
   const { themes, currentTheme } = useAppTheme();
   const theme = themes[currentTheme];
-  const { weddingData } = useUserData();
+  const { weddingData, sessionId } = useUserData();
   
   const [newMessage, setNewMessage] = useState({
     name: '',
@@ -19,8 +19,8 @@ const GuestbookPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Get wedding ID for API calls
-  const weddingId = weddingData?.id || 'default';
+  // Get wedding ID for API calls - different logic for public vs private
+  const weddingId = isPrivate ? (weddingData?.id || 'default') : 'public';
 
   useEffect(() => {
     fetchMessages();
@@ -32,7 +32,19 @@ const GuestbookPage = () => {
     
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-      const response = await fetch(`${backendUrl}/api/guestbook/${weddingId}`);
+      
+      let response;
+      if (isPrivate && isDashboard) {
+        // Private dashboard guestbook - get messages for user's specific wedding
+        response = await fetch(`${backendUrl}/api/guestbook/private/${weddingId}`);
+      } else if (isPrivate) {
+        // Private wedding page (shareable link) - get messages for specific wedding
+        response = await fetch(`${backendUrl}/api/guestbook/${weddingId}`);
+      } else {
+        // Public landing page guestbook - get all public messages
+        response = await fetch(`${backendUrl}/api/guestbook/public/messages`);
+      }
+      
       const data = await response.json();
       
       if (data.success) {
@@ -55,16 +67,38 @@ const GuestbookPage = () => {
     
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-      const response = await fetch(`${backendUrl}/api/guestbook`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      
+      let response;
+      let requestBody;
+      
+      if (isPrivate && isDashboard) {
+        // Private dashboard guestbook - send to private endpoint with session
+        requestBody = {
           ...newMessage,
-          wedding_id: weddingId
-        })
-      });
+          session_id: sessionId
+        };
+        response = await fetch(`${backendUrl}/api/guestbook/private`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody)
+        });
+      } else {
+        // Public guestbook or shareable wedding page
+        requestBody = {
+          ...newMessage,
+          wedding_id: weddingId,
+          is_public: !isPrivate
+        };
+        response = await fetch(`${backendUrl}/api/guestbook`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody)
+        });
+      }
       
       const data = await response.json();
       

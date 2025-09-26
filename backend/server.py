@@ -826,6 +826,7 @@ class GuestbookMessage(BaseModel):
     name: str
     relationship: Optional[str] = ""
     message: str
+    is_public: bool = True  # True for public landing page, False for private dashboard
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 # Guestbook Endpoints
@@ -834,12 +835,18 @@ async def create_guestbook_message(message_data: dict):
     """Create a new guestbook message"""
     users_coll, weddings_coll = await get_collections()
     
+    # Determine if this is a public or private message
+    # Public messages: wedding_id is 'public' or 'default'
+    # Private messages: wedding_id is actual user's wedding ID
+    is_public = message_data.get('wedding_id', '') in ['public', 'default', ''] or message_data.get('is_public', True)
+    
     # Create guestbook message
     guestbook_message = GuestbookMessage(
-        wedding_id=message_data.get('wedding_id', ''),
+        wedding_id=message_data.get('wedding_id', 'public'),
         name=message_data.get('name', ''),
         relationship=message_data.get('relationship', ''),
-        message=message_data.get('message', '')
+        message=message_data.get('message', ''),
+        is_public=is_public
     )
     
     # Convert to dict
@@ -852,6 +859,46 @@ async def create_guestbook_message(message_data: dict):
     
     return {"success": True, "message": "Guestbook message added successfully", "message_id": guestbook_message.id}
 
+@api_router.post("/guestbook/private")
+async def create_private_guestbook_message(message_data: dict):
+    """Create a private guestbook message for authenticated user's wedding"""
+    session_id = message_data.get('session_id')
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Session ID required for private guestbook"
+        )
+    
+    current_user = await get_current_user_simple(session_id)
+    users_coll, weddings_coll = await get_collections()
+    
+    # Find user's wedding
+    user_wedding = await weddings_coll.find_one({"user_id": current_user.id})
+    if not user_wedding:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User wedding not found"
+        )
+    
+    # Create private guestbook message
+    guestbook_message = GuestbookMessage(
+        wedding_id=user_wedding["id"],
+        name=message_data.get('name', ''),
+        relationship=message_data.get('relationship', ''),
+        message=message_data.get('message', ''),
+        is_public=False  # Always private for this endpoint
+    )
+    
+    # Convert to dict
+    message_dict = guestbook_message.dict()
+    message_dict["created_at"] = message_dict["created_at"].isoformat()
+    
+    # Store message in guestbook collection
+    guestbook_collection = database.guestbook
+    await guestbook_collection.insert_one(message_dict)
+    
+    return {"success": True, "message": "Private guestbook message added successfully", "message_id": guestbook_message.id}
+
 @api_router.get("/guestbook/{wedding_id}")
 async def get_guestbook_messages(wedding_id: str):
     """Get all guestbook messages for a specific wedding"""
@@ -862,6 +909,43 @@ async def get_guestbook_messages(wedding_id: str):
     messages = await guestbook_collection.find({"wedding_id": wedding_id}).sort("created_at", -1).to_list(length=None)
     
     # Remove _id from response and format dates
+    response_data = []
+    for msg in messages:
+        clean_msg = {k: v for k, v in msg.items() if k != "_id"}
+        response_data.append(clean_msg)
+    
+    return {"success": True, "messages": response_data, "total_count": len(response_data)}
+
+@api_router.get("/guestbook/public/messages")
+async def get_public_guestbook_messages():
+    """Get all public guestbook messages (for landing page)"""
+    users_coll, weddings_coll = await get_collections()
+    
+    # Get public messages only
+    guestbook_collection = database.guestbook
+    messages = await guestbook_collection.find({"is_public": True}).sort("created_at", -1).to_list(length=None)
+    
+    # Remove _id from response
+    response_data = []
+    for msg in messages:
+        clean_msg = {k: v for k, v in msg.items() if k != "_id"}
+        response_data.append(clean_msg)
+    
+    return {"success": True, "messages": response_data, "total_count": len(response_data)}
+
+@api_router.get("/guestbook/private/{user_wedding_id}")
+async def get_private_guestbook_messages(user_wedding_id: str):
+    """Get private guestbook messages for a specific user's wedding (dashboard)"""
+    users_coll, weddings_coll = await get_collections()
+    
+    # Get private messages for this specific wedding
+    guestbook_collection = database.guestbook
+    messages = await guestbook_collection.find({
+        "wedding_id": user_wedding_id, 
+        "is_public": False
+    }).sort("created_at", -1).to_list(length=None)
+    
+    # Remove _id from response
     response_data = []
     for msg in messages:
         clean_msg = {k: v for k, v in msg.items() if k != "_id"}
