@@ -1472,20 +1472,12 @@ const FormPopup = ({ sectionId, onClose, theme, modalRef }) => {
               </div>
             </div>
             
-            <div className="text-center py-12">
-              <div 
-                className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
-                style={{ background: theme.gradientAccent }}
-              >
-                <Image className="w-8 h-8" style={{ color: theme.primary }} />
-              </div>
-              <p className="text-lg mb-2" style={{ color: theme.text }}>
-                Photo Gallery Management
-              </p>
-              <p className="text-sm" style={{ color: theme.textLight }}>
-                Upload and organize your engagement photos, couple photos, and other memories to be displayed in the gallery section.
-              </p>
-            </div>
+            {/* Gallery Management Interface */}
+            <GalleryManager 
+              weddingData={weddingData}
+              onSave={saveWeddingData}
+              theme={theme}
+            />
           </div>
         );
 
