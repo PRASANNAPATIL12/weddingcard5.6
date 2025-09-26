@@ -97,78 +97,86 @@
 #====================================================================================================
 
 
-
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
 user_problem_statement: |
-  Clone GitHub repository https://github.com/PRASANNAPATIL12/weddingcard5.6.git, create branch 'feat/route', 
-  and implement two main features while keeping everything exactly as it is:
-  1. **Guestbook Separation**: Separate public landing page guestbook from private dashboard guestbook
-  2. **Wedding Party Management**: Full implementation with bride party, groom party, and special roles sections
+  Clone GitHub repository (https://github.com/PRASANNAPATIL12/weddingcard5.6.git) with provided token, 
+  create feat/gallery branch, and implement enhanced Gallery and Schedule features:
   
+  1. Gallery Enhancement: Add URL input system with tagging (All Photos, Engagement, Our Travels, With Family, With Friends)
+     - Each photo should have description and event message
+     - Use card-based design similar to wedding party section with edit/delete functionality
+  
+  2. Schedule Enhancement: Improve existing schedule form design
+     - Add date field to each event card  
+     - Use card-based system similar to wedding party section
+     - Add edit/delete buttons for each card
+     - Include important information section with editable cards
+     - Ensure form only saves when user clicks save button or clicks away from form
+
 backend:
-  - task: "Guestbook API Enhancement - Public vs Private"
-    implemented: true
-    working: "NA"
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Enhanced GuestbookMessage model with is_public field, added separate endpoints for public/private guestbook messages, implemented /api/guestbook/public/messages and /api/guestbook/private endpoints"
-
-  - task: "Wedding Party API Enhancement" 
-    implemented: true
-    working: "NA"
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Wedding party API endpoints already existed and working. Supports bridal_party, groom_party, and special_roles with proper CRUD operations"
-
-frontend:
-  - task: "Guestbook Component Separation Logic"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/GuestbookPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Updated GuestbookPage to accept isPrivate and isDashboard props, implemented different API call logic based on context (public landing vs private dashboard vs shareable links)"
-
-  - task: "Wedding Party Management Interface"
+  - task: "Repository Setup and Environment Configuration"
     implemented: true
     working: true
-    file: "/app/frontend/src/components/LeftSidebar.js"
+    file: "server.py"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "main"
-        comment: "Successfully implemented WeddingPartyManager component with three tabs (Bride Party, Groom Party, Special Roles), add/edit/delete functionality, form with name, role, description, and photo URL fields. Interface is responsive and working perfectly."
+        comment: "Successfully cloned repository, created feat/gallery branch, set up MongoDB connection with provided credentials, installed all dependencies, built frontend, and started all services. Application is running on localhost:8001"
 
-  - task: "Route Updates for Guestbook Context"
+  - task: "Gallery Backend API Support"
     implemented: true
-    working: "NA"
-    file: "/app/frontend/src/App.js"
+    working: true
+    file: "server.py"
     stuck_count: 0
-    priority: "medium"
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main" 
+        comment: "Backend already supports gallery_photos: List[dict] in WeddingData model. Ready for frontend enhancement implementation"
+
+  - task: "Schedule Backend API Support"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Backend already supports schedule_events: List[dict] in WeddingData model. Ready for frontend enhancement implementation"
+
+frontend:
+  - task: "Gallery Enhancement Implementation"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/src/pages/GalleryPage.js, /app/frontend/src/components/LeftSidebar.js"
+    stuck_count: 0
+    priority: "high"
     needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Updated App.js routes to pass appropriate props to GuestbookPage - public for landing page, private for shareable links"
+        comment: "Need to implement enhanced gallery management with URL input, tagging system (All Photos, Engagement, Our Travels, With Family, With Friends), descriptions, and card-based edit/delete interface similar to wedding party section"
+
+  - task: "Schedule Enhancement Implementation"
+    implemented: false
+    working: "NA" 
+    file: "/app/frontend/src/pages/SchedulePage.js, /app/frontend/src/components/LeftSidebar.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to implement enhanced schedule management with date fields, card-based design similar to wedding party section, edit/delete functionality, and improved important information section. Form should only save on explicit save action or form blur"
 
 metadata:
   created_by: "main_agent"
@@ -178,321 +186,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Guestbook API Enhancement - Public vs Private"
-    - "Guestbook Component Separation Logic" 
-    - "Wedding Party API Enhancement"
-  stuck_tasks: []
-  test_all: true
-  test_priority: "high_first"
-
-agent_communication:
-  - agent: "main"
-    message: "Successfully implemented both requested features. Wedding Party Management is complete and working with full CRUD interface. Guestbook separation is implemented but needs testing to verify the public vs private message separation is working correctly. Ready for comprehensive testing of both backend APIs and frontend functionality."
-
-user_problem_statement: |
-  User requested to clone a GitHub repository (https://github.com/PRASANNAPATIL12/weddingcard5.5.git) 
-  and create a branch 'feat/route', then implement the following features:
-  
-  1. **Wedding Party Management**: 
-     - Allow users to edit wedding party data in dashboard (bridal_party, groom_party, special_roles)
-     - User-friendly form for adding/removing cards with photo, name, designation, description
-     - Responsive card layout for desktop and mobile
-     - Data stored in MongoDB per user
-  
-  2. **Guestbook Functionality**: 
-     - Make guestbook functional on both landing page and dashboard
-     - Store guest messages in MongoDB with name, relationship, message fields
-     - Display messages in "Messages from our loved ones" section
-     - Real-time update when messages are submitted
-  
-  3. **Theme Switching in Dashboard**:
-     - Fix theme switching functionality in dashboard sidebar
-     - Apply theme changes instantly to entire dashboard (similar to navbar theme switching)
-  
-  User specified:
-  - Do not make structural changes - keep everything exactly as cloned
-  - Code is already updated but .md files are old  
-  - Use provided MongoDB connection string
-  - Implement with JPEG/PNG image support only
-  - Make forms very user-friendly with clear icons and guidance
-
-backend:
-  - task: "Clone GitHub repository and setup environment"
-    implemented: true
-    working: true
-    file: "all backend files"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "main" 
-        comment: "Successfully cloned repo, installed dependencies, started services. MongoDB connected. Backend API working at /api/test"
-
-  - task: "Wedding Party Management API endpoints"
-    implemented: true
-    working: true
-    file: "backend/server.py"
-    stuck_count: 0
-    priority: "high" 
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "main"
-        comment: "Backend already has /api/wedding/party endpoint for updating bridal_party, groom_party, special_roles. Uses specialized endpoint for wedding party data."
-
-  - task: "Guestbook API endpoints"
-    implemented: true
-    working: true
-    file: "backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "main" 
-        comment: "Backend has complete guestbook APIs: POST /api/guestbook, GET /api/guestbook/{wedding_id}, GET /api/guestbook/shareable/{shareable_id}"
-
-frontend:
-  - task: "Wedding Party Form Implementation"
-    implemented: true
-    working: false
-    file: "frontend/src/pages/DashboardPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: false
-        agent: "main"
-        comment: "Dashboard already has WeddingPartyFormContent component with add/remove/edit functionality. Need to verify if it's fully functional and user-friendly as per requirements."
-
-  - task: "Guestbook Page Functionality"
-    implemented: true  
-    working: false
-    file: "frontend/src/pages/GuestbookPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: false
-        agent: "main"
-        comment: "GuestbookPage has full functionality for submitting and displaying messages. Uses API endpoints. Need to test if messages display correctly."
-
-  - task: "Dashboard Theme Switching"
-    implemented: true
-    working: false
-    file: "frontend/src/pages/DashboardPage.js"
-    stuck_count: 0
-    priority: "medium"
-    needs_retesting: true
-    status_history:
-      - working: false
-        agent: "main"
-        comment: "Theme switching exists in dashboard theme form. Need to verify instant application like navbar theme switching."
-
-metadata:
-  created_by: "main_agent"
-  version: "1.0"
-  test_sequence: 0
-  run_ui: false
-
-test_plan:
-  current_focus:
-    - "Test Wedding Party Form functionality in dashboard"
-    - "Test Guestbook message submission and display"  
-    - "Test Dashboard theme switching"
+    - "Gallery Enhancement Implementation"
+    - "Schedule Enhancement Implementation"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "Project successfully cloned and set up. All backend APIs are implemented. Frontend components exist but need functionality verification. App is running on localhost:8001. MongoDB connected successfully. Ready to test current functionality and implement any missing features."
-
-user_problem_statement: |
-  User requested to clone a GitHub repository (https://github.com/PRASANNAPATIL12/weddingcard5.6.git) 
-  and create a branch 'feat/route', then implement the following features:
-  
-  1. **Wedding Party Management**: 
-     - Allow users to edit wedding party data in dashboard (bridal_party, groom_party, special_roles)
-     - User-friendly form for adding/removing cards with photo, name, designation, description
-     - Responsive card layout for desktop and mobile
-     - Data stored in MongoDB per user
-  
-  2. **Guestbook Functionality**: 
-     - Make guestbook functional on both landing page and dashboard
-     - Store guest messages in MongoDB with name, relationship, message fields
-     - Display messages in "Messages from our loved ones" section
-     - Real-time update when messages are submitted
-  
-  3. **Theme Switching in Dashboard**:
-     - Fix theme switching functionality in dashboard sidebar
-     - Apply theme changes instantly to entire dashboard (similar to navbar theme switching)
-  
-  User specified:
-  - Do not make structural changes - keep everything exactly as cloned
-  - Use provided MongoDB connection string
-  - Implement with JPEG/PNG image support only
-  - Make forms very user-friendly with clear icons and guidance
-
-backend:
-  - task: "Clone GitHub repository and setup environment"
-    implemented: true
-    working: true
-    file: "all backend files"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "main" 
-        comment: "Successfully cloned repo from feat/route branch, installed dependencies, started services. MongoDB connected successfully. Backend API working at /api/test"
-
-  - task: "Wedding Party Management API endpoints"
-    implemented: true
-    working: true
-    file: "backend/server.py"
-    stuck_count: 0
-    priority: "high" 
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "main"
-        comment: "Backend API has /api/wedding/party endpoint for updating bridal_party, groom_party, special_roles. Successfully tested with curl - data saves to MongoDB correctly."
-
-  - task: "Guestbook API endpoints"
-    implemented: true
-    working: true
-    file: "backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "main" 
-        comment: "Backend has complete guestbook APIs: POST /api/guestbook, GET /api/guestbook/{wedding_id}, GET /api/guestbook/shareable/{shareable_id}. Successfully tested - messages stored and retrieved from MongoDB."
-
-frontend:
-  - task: "Public Wedding Page Display"
-    implemented: true
-    working: true
-    file: "frontend/src/pages/PublicWeddingPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "Public wedding page loads correctly at /share/04a74629. Displays Sarah & Michael couple names, wedding date (June 15, 2025), venue (Sunset Garden Estate, Napa Valley), and countdown timer. Navigation works properly between sections."
-
-  - task: "Wedding Party Section Display"
-    implemented: true
-    working: true
-    file: "frontend/src/pages/PublicWeddingPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: false
-        agent: "main"
-        comment: "Dashboard already has WeddingPartyFormContent component with add/remove/edit functionality. Need to verify if it's fully functional and user-friendly as per requirements."
-      - working: false
-        agent: "testing"
-        comment: "CRITICAL: Wedding Party section not displaying Emma Johnson (Maid of Honor) or David Wilson (Best Man). API calls to /api/wedding/user/party return 404 errors. The section loads but shows no wedding party members. Backend API integration failing."
-      - working: true
-        agent: "main"
-        comment: "FIXED: Updated photo handling to support both string URLs and objects, corrected frontend .env to point to localhost:8001, rebuilt frontend. Wedding Party now displays perfectly - Emma Johnson (Maid of Honor) and David Wilson (Best Man) with photos and descriptions."
-
-  - task: "Guestbook Page Functionality"
-    implemented: true  
-    working: true
-    file: "frontend/src/pages/GuestbookPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: false
-        agent: "main"
-        comment: "GuestbookPage has full functionality for submitting and displaying messages. Uses API endpoints. Need to test if messages display correctly."
-      - working: true
-        agent: "testing"
-        comment: "Guestbook functionality working perfectly. Form submission successful with test data (John Smith, Friend, congratulatory message). Message appears immediately in 'Messages from Our Loved Ones' section. API integration working correctly."
-      - working: true
-        agent: "main"
-        comment: "CONFIRMED: Guestbook section now loads perfectly on public wedding pages. Form displays with proper styling - 'Leave a Message' section, name/relationship/message fields, beautiful UI design matching wedding theme."
-
-  - task: "Theme Switching on Public Pages"
-    implemented: true
-    working: true
-    file: "frontend/src/components/FloatingNavbar.js"
-    stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "testing"
-        comment: "Theme switching works correctly on public pages. Desktop theme selector allows switching between Classic, Modern, and Boho themes. Visual changes apply immediately. Theme selector found in navigation dropdown."
-
-  - task: "User Registration Flow"
-    implemented: true
-    working: false
-    file: "frontend/src/pages/RegisterPage.js"
-    stuck_count: 1
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: false
-        agent: "testing"
-        comment: "CRITICAL: Registration page at /register redirects to public wedding page instead of showing registration form. No input fields or Create Account button visible. Registration functionality not accessible to users."
-
-  - task: "User Login Flow"
-    implemented: true
-    working: false
-    file: "frontend/src/pages/LoginPage.js"
-    stuck_count: 1
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: false
-        agent: "testing"
-        comment: "Login page loads correctly with form fields, but authentication fails. Test user 'frontendtestuser' with password 'test123' returns 401 Unauthorized error from /api/auth/login. Error message: 'Incorrect username or password'. Backend authentication not working."
-
-  - task: "Dashboard Theme Switching"
-    implemented: true
-    working: false
-    file: "frontend/src/pages/DashboardPage.js"
-    stuck_count: 1
-    priority: "medium"
-    needs_retesting: true
-    status_history:
-      - working: false
-        agent: "main"
-        comment: "Theme switching exists in dashboard theme form. Need to verify instant application like navbar theme switching."
-      - working: false
-        agent: "main"
-        comment: "Dashboard session persistence issue prevents full testing of theme switching. Known issue from documentation - users get logged out on dashboard refresh. Theme switching exists but needs verification when session issue is resolved."
-
-metadata:
-  created_by: "main_agent"
-  version: "2.0"
-  test_sequence: 1
-  run_ui: true
-
-test_plan:
-  current_focus:
-    - "Fix Wedding Party API endpoints - 404 errors on /api/wedding/user/party"
-    - "Fix Registration page routing - redirects instead of showing form"
-    - "Fix Login authentication - 401 errors for valid users"
-  stuck_tasks:
-    - "Wedding Party Section Display"
-    - "User Registration Flow" 
-    - "User Login Flow"
-    - "Dashboard Session Persistence (known issue from documentation)"
-  test_all: false
-  test_priority: "high_first"
-
-agent_communication:
-  - agent: "main"
-    message: "Successfully cloned GitHub repo and verified all backend APIs working. Wedding Party and Guestbook APIs confirmed functional via curl testing and public page display. Dashboard session persistence issue (documented) prevents full frontend dashboard testing. All backend functionality implemented and working correctly. Public pages display wedding party data properly."
-  - agent: "testing"
-    message: "Completed comprehensive testing of Wedding Card application. CRITICAL FINDINGS: 1) Wedding Party section not displaying Emma Johnson/David Wilson - API endpoints returning 404 errors for /api/wedding/user/party, 2) Guestbook functionality working perfectly - form submission and display successful, 3) Theme switching works on public pages, 4) Registration page redirects to public page instead of showing registration form, 5) Login authentication fails with 401 errors for user 'frontendtestuser'. Public wedding page loads correctly with Sarah & Michael data. Backend API integration issues need investigation."
+    message: "Successfully cloned weddingcard5.6 repository, created feat/gallery branch, configured environment with provided MongoDB credentials, and verified existing application is working. Backend already supports gallery_photos and schedule_events arrays. Now implementing frontend enhancements for gallery URL input with tagging system and improved schedule form with card-based design as requested by user."
