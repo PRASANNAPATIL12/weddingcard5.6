@@ -582,6 +582,321 @@ const WeddingPartyManager = ({ weddingData, onSave, theme }) => {
   );
 };
 
+// Gallery Manager Component
+const GalleryManager = ({ weddingData, onSave, theme }) => {
+  const [galleryPhotos, setGalleryPhotos] = useState(weddingData?.gallery_photos || []);
+  const [editingPhoto, setEditingPhoto] = useState(null);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Photo categories/tags
+  const photoCategories = [
+    { id: 'all', name: 'All Photos', color: '#6366F1' },
+    { id: 'engagement', name: 'Engagement', color: '#EC4899' },
+    { id: 'travels', name: 'Our Travels', color: '#10B981' },
+    { id: 'family', name: 'With Family', color: '#F59E0B' },
+    { id: 'friends', name: 'With Friends', color: '#8B5CF6' }
+  ];
+
+  const handleAddPhoto = () => {
+    setEditingPhoto({
+      id: Date.now().toString(),
+      url: '',
+      title: '',
+      description: '',
+      category: 'all',
+      eventMessage: ''
+    });
+    setIsAddingNew(true);
+  };
+
+  const handleEditPhoto = (photo) => {
+    setEditingPhoto({ ...photo });
+    setIsAddingNew(false);
+  };
+
+  const handleSavePhoto = () => {
+    if (!editingPhoto.url || !editingPhoto.title) {
+      alert('Please fill in URL and title fields');
+      return;
+    }
+
+    const updatedPhotos = [...galleryPhotos];
+    
+    if (isAddingNew) {
+      updatedPhotos.push(editingPhoto);
+    } else {
+      const index = updatedPhotos.findIndex(p => p.id === editingPhoto.id);
+      if (index !== -1) {
+        updatedPhotos[index] = editingPhoto;
+      }
+    }
+
+    setGalleryPhotos(updatedPhotos);
+    setEditingPhoto(null);
+    setIsAddingNew(false);
+    
+    // Save to backend immediately when user clicks save
+    onSave({ gallery_photos: updatedPhotos });
+  };
+
+  const handleDeletePhoto = (photoId) => {
+    if (!window.confirm('Are you sure you want to remove this photo?')) return;
+    
+    const updatedPhotos = galleryPhotos.filter(p => p.id !== photoId);
+    setGalleryPhotos(updatedPhotos);
+    
+    // Save to backend immediately after confirmation
+    onSave({ gallery_photos: updatedPhotos });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPhoto(null);
+    setIsAddingNew(false);
+  };
+
+  const getCategoryColor = (categoryId) => {
+    const category = photoCategories.find(c => c.id === categoryId);
+    return category ? category.color : '#6366F1';
+  };
+
+  const PhotoCard = ({ photo }) => (
+    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="aspect-w-16 aspect-h-9 bg-gray-200">
+        <img 
+          src={photo.url} 
+          alt={photo.title}
+          className="w-full h-48 object-cover"
+          onError={(e) => {
+            e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150"><rect width="200" height="150" fill="%23f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%236b7280" font-size="14">Invalid Image URL</text></svg>';
+          }}
+        />
+      </div>
+      <div className="p-4">
+        <div className="flex justify-between items-start mb-2">
+          <h4 className="font-semibold text-lg" style={{ color: theme.text }}>{photo.title}</h4>
+          <span 
+            className="px-2 py-1 rounded-full text-xs font-medium text-white"
+            style={{ backgroundColor: getCategoryColor(photo.category) }}
+          >
+            {photoCategories.find(c => c.id === photo.category)?.name || 'All Photos'}
+          </span>
+        </div>
+        
+        {photo.description && (
+          <p className="text-sm mb-2" style={{ color: theme.textLight }}>
+            {photo.description}
+          </p>
+        )}
+        
+        {photo.eventMessage && (
+          <div className="mb-3 p-2 rounded-lg bg-blue-50 border border-blue-200">
+            <p className="text-sm text-blue-800">{photo.eventMessage}</p>
+          </div>
+        )}
+        
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleEditPhoto(photo)}
+            className="flex-1 px-3 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-colors text-blue-600 text-sm font-medium"
+          >
+            <Edit3 className="w-4 h-4 inline mr-1" />
+            Edit
+          </button>
+          <button
+            onClick={() => handleDeletePhoto(photo.id)}
+            className="flex-1 px-3 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-colors text-red-600 text-sm font-medium"
+          >
+            <X className="w-4 h-4 inline mr-1" />
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const PhotoForm = () => (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h4 className="text-lg font-semibold mb-4" style={{ color: theme.primary }}>
+        {isAddingNew ? 'Add New Photo' : 'Edit Photo'}
+      </h4>
+      
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Photo URL (PNG/JPG only) *
+          </label>
+          <input
+            type="url"
+            value={editingPhoto?.url || ''}
+            onChange={(e) => setEditingPhoto({ ...editingPhoto, url: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="https://images.unsplash.com/photo-example.jpg"
+          />
+          <p className="text-xs mt-1" style={{ color: theme.textLight }}>
+            Use a direct link to a PNG or JPG image
+          </p>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Photo Title *
+          </label>
+          <input
+            type="text"
+            value={editingPhoto?.title || ''}
+            onChange={(e) => setEditingPhoto({ ...editingPhoto, title: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="e.g., Engagement Session, Paris Adventure"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Category Tag *
+          </label>
+          <select
+            value={editingPhoto?.category || 'all'}
+            onChange={(e) => setEditingPhoto({ ...editingPhoto, category: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            {photoCategories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs mt-1" style={{ color: theme.textLight }}>
+            Choose which section this photo belongs to in the gallery
+          </p>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Photo Description
+          </label>
+          <textarea
+            value={editingPhoto?.description || ''}
+            onChange={(e) => setEditingPhoto({ ...editingPhoto, description: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="2"
+            placeholder="Brief description of the photo..."
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Event Message
+          </label>
+          <textarea
+            value={editingPhoto?.eventMessage || ''}
+            onChange={(e) => setEditingPhoto({ ...editingPhoto, eventMessage: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="3"
+            placeholder="What message do you want to show about this moment/event?"
+          />
+        </div>
+        
+        {/* Image Preview */}
+        {editingPhoto?.url && (
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+              Preview
+            </label>
+            <img
+              src={editingPhoto.url}
+              alt="Preview"
+              className="w-32 h-24 object-cover rounded-lg border-2 shadow-md"
+              style={{ borderColor: getCategoryColor(editingPhoto.category) }}
+              onError={(e) => {
+                e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="75" viewBox="0 0 100 75"><rect width="100" height="75" fill="%23f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%236b7280" font-size="10">Invalid URL</text></svg>';
+              }}
+            />
+          </div>
+        )}
+      </div>
+      
+      <div className="flex gap-3 mt-6">
+        <button
+          onClick={handleSavePhoto}
+          className="px-4 py-2 rounded-lg text-white font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+          style={{ backgroundColor: theme.primary }}
+        >
+          <Save className="w-4 h-4" />
+          Save
+        </button>
+        <button
+          onClick={handleCancelEdit}
+          className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      <p className="text-sm" style={{ color: theme.textLight }}>
+        Add photos with URLs and organize them by category. Each photo can have a description and event message that will be displayed in the gallery.
+      </p>
+
+      {/* Add New Photo Button */}
+      {!editingPhoto && (
+        <button
+          onClick={handleAddPhoto}
+          className="w-full py-3 border-2 border-dashed rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+          style={{ borderColor: theme.primary, color: theme.primary }}
+        >
+          <Plus className="w-5 h-5" />
+          Add New Photo
+        </button>
+      )}
+
+      {/* Photo Form (Edit/Add) */}
+      {editingPhoto && <PhotoForm />}
+
+      {/* Photos Grid */}
+      <div className="space-y-4">
+        {galleryPhotos.length === 0 && !editingPhoto ? (
+          <div className="text-center py-8">
+            <Image className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-500">No photos added yet</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-4">
+            {galleryPhotos.map((photo) => (
+              <PhotoCard key={photo.id || photo.url} photo={photo} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Category Legend */}
+      {galleryPhotos.length > 0 && (
+        <div className="pt-4 border-t border-gray-200">
+          <h5 className="text-sm font-medium mb-3" style={{ color: theme.text }}>
+            Category Colors:
+          </h5>
+          <div className="flex flex-wrap gap-2">
+            {photoCategories.map((category) => (
+              <div key={category.id} className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: category.color }}
+                />
+                <span className="text-xs" style={{ color: theme.textLight }}>
+                  {category.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const LeftSidebar = () => {
   const { themes, currentTheme } = useAppTheme();
   const theme = themes[currentTheme];
