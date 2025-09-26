@@ -897,6 +897,441 @@ const GalleryManager = ({ weddingData, onSave, theme }) => {
   );
 };
 
+// Schedule Manager Component  
+const ScheduleManager = ({ weddingData, onSave, theme }) => {
+  const [scheduleEvents, setScheduleEvents] = useState(weddingData?.schedule_events || []);
+  const [importantInfo, setImportantInfo] = useState(weddingData?.important_info || {});
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [editingInfoItem, setEditingInfoItem] = useState(null);
+  const [isAddingEvent, setIsAddingEvent] = useState(false);
+  const [isAddingInfo, setIsAddingInfo] = useState(false);
+
+  const defaultInfoItems = [
+    { id: 'dress_code', title: 'Dress Code', description: 'Formal/Black Tie Optional. We encourage elegant attire in garden-friendly footwear.', icon: 'Users' },
+    { id: 'weather_plan', title: 'Weather Plan', description: 'Our venue has both indoor and covered outdoor spaces for any weather conditions.', icon: 'Calendar' },
+    { id: 'transportation', title: 'Transportation', description: 'Complimentary shuttle service available from nearby hotels. Valet parking provided.', icon: 'MapPin' },
+    { id: 'special_accommodations', title: 'Special Accommodations', description: 'Please let us know of any accessibility needs or dietary restrictions in your RSVP.', icon: 'Users' }
+  ];
+
+  const handleAddEvent = () => {
+    setEditingEvent({
+      id: Date.now().toString(),
+      time: '12:00 PM',
+      title: '',
+      description: '',
+      location: '',
+      duration: '1 hour',
+      date: weddingData?.wedding_date || '',
+      highlight: false
+    });
+    setIsAddingEvent(true);
+  };
+
+  const handleEditEvent = (event, index) => {
+    setEditingEvent({ ...event, index });
+    setIsAddingEvent(false);
+  };
+
+  const handleSaveEvent = () => {
+    if (!editingEvent.title || !editingEvent.time) {
+      alert('Please fill in title and time fields');
+      return;
+    }
+
+    const updatedEvents = [...scheduleEvents];
+    
+    if (isAddingEvent) {
+      updatedEvents.push({
+        id: editingEvent.id,
+        time: editingEvent.time,
+        title: editingEvent.title,
+        description: editingEvent.description,
+        location: editingEvent.location,
+        duration: editingEvent.duration,
+        date: editingEvent.date,
+        highlight: editingEvent.highlight
+      });
+    } else {
+      const index = editingEvent.index;
+      if (index !== undefined && updatedEvents[index]) {
+        updatedEvents[index] = {
+          id: updatedEvents[index].id || Date.now().toString(),
+          time: editingEvent.time,
+          title: editingEvent.title,
+          description: editingEvent.description,
+          location: editingEvent.location,
+          duration: editingEvent.duration,
+          date: editingEvent.date,
+          highlight: editingEvent.highlight
+        };
+      }
+    }
+
+    setScheduleEvents(updatedEvents);
+    setEditingEvent(null);
+    setIsAddingEvent(false);
+    
+    // Save to backend immediately
+    onSave({ schedule_events: updatedEvents });
+  };
+
+  const handleDeleteEvent = (index) => {
+    if (!window.confirm('Are you sure you want to remove this event?')) return;
+    
+    const updatedEvents = scheduleEvents.filter((_, i) => i !== index);
+    setScheduleEvents(updatedEvents);
+    
+    // Save to backend immediately
+    onSave({ schedule_events: updatedEvents });
+  };
+
+  const handleCancelEditEvent = () => {
+    setEditingEvent(null);
+    setIsAddingEvent(false);
+  };
+
+  // Important Information Management
+  const handleAddInfoItem = () => {
+    setEditingInfoItem({
+      id: Date.now().toString(),
+      title: '',
+      description: '',
+      enabled: true
+    });
+    setIsAddingInfo(true);
+  };
+
+  const handleEditInfoItem = (item) => {
+    setEditingInfoItem({ ...item });
+    setIsAddingInfo(false);
+  };
+
+  const handleSaveInfoItem = () => {
+    if (!editingInfoItem.title) {
+      alert('Please fill in the title field');
+      return;
+    }
+
+    const updatedInfo = { ...importantInfo };
+    updatedInfo[editingInfoItem.id] = {
+      title: editingInfoItem.title,
+      description: editingInfoItem.description,
+      enabled: editingInfoItem.enabled
+    };
+
+    setImportantInfo(updatedInfo);
+    setEditingInfoItem(null);
+    setIsAddingInfo(false);
+    
+    // Save to backend immediately
+    onSave({ important_info: updatedInfo });
+  };
+
+  const handleDeleteInfoItem = (itemId) => {
+    if (!window.confirm('Are you sure you want to remove this information item?')) return;
+    
+    const updatedInfo = { ...importantInfo };
+    delete updatedInfo[itemId];
+    setImportantInfo(updatedInfo);
+    
+    // Save to backend immediately
+    onSave({ important_info: updatedInfo });
+  };
+
+  const EventCard = ({ event, index }) => (
+    <div className="bg-white rounded-lg shadow-md p-6 border-l-4" style={{ borderLeftColor: event.highlight ? theme.accent : '#e5e7eb' }}>
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            {event.highlight && (
+              <span className="px-2 py-1 rounded-full text-xs font-medium text-white bg-yellow-500">
+                Highlighted
+              </span>
+            )}
+            <h4 className="text-lg font-semibold" style={{ color: theme.text }}>{event.title}</h4>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-4 text-sm mb-3">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" style={{ color: theme.accent }} />
+              <span style={{ color: theme.textLight }}>{event.time}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" style={{ color: theme.accent }} />
+              <span style={{ color: theme.textLight }}>{event.date || 'No date set'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" style={{ color: theme.accent }} />
+              <span style={{ color: theme.textLight }}>Duration: {event.duration}</span>
+            </div>
+            {event.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" style={{ color: theme.accent }} />
+                <span style={{ color: theme.textLight }}>{event.location}</span>
+              </div>
+            )}
+          </div>
+          
+          {event.description && (
+            <p className="text-sm mb-3" style={{ color: theme.textLight }}>
+              {event.description}
+            </p>
+          )}
+        </div>
+        
+        <div className="flex gap-2 ml-4">
+          <button
+            onClick={() => handleEditEvent(event, index)}
+            className="p-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-colors"
+            title="Edit this event"
+          >
+            <Edit3 className="w-4 h-4 text-blue-600" />
+          </button>
+          <button
+            onClick={() => handleDeleteEvent(index)}
+            className="p-2 rounded-lg bg-red-100 hover:bg-red-200 transition-colors"
+            title="Delete this event"
+          >
+            <X className="w-4 h-4 text-red-600" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const EventForm = () => (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h4 className="text-lg font-semibold mb-4" style={{ color: theme.primary }}>
+        {isAddingEvent ? 'Add New Event' : 'Edit Event'}
+      </h4>
+      
+      <div className="space-y-4">
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+              Event Title *
+            </label>
+            <input
+              type="text"
+              value={editingEvent?.title || ''}
+              onChange={(e) => setEditingEvent({ ...editingEvent, title: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="e.g., Wedding Ceremony, Reception"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+              Time *
+            </label>
+            <input
+              type="text"
+              value={editingEvent?.time || ''}
+              onChange={(e) => setEditingEvent({ ...editingEvent, time: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="e.g., 2:00 PM"
+            />
+          </div>
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+              Date
+            </label>
+            <input
+              type="date"
+              value={editingEvent?.date || ''}
+              onChange={(e) => setEditingEvent({ ...editingEvent, date: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+              Duration
+            </label>
+            <input
+              type="text"
+              value={editingEvent?.duration || ''}
+              onChange={(e) => setEditingEvent({ ...editingEvent, duration: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="e.g., 1 hour, 30 minutes"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Location
+          </label>
+          <input
+            type="text"
+            value={editingEvent?.location || ''}
+            onChange={(e) => setEditingEvent({ ...editingEvent, location: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="e.g., Main Hall, Garden Area"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: theme.text }}>
+            Description
+          </label>
+          <textarea
+            value={editingEvent?.description || ''}
+            onChange={(e) => setEditingEvent({ ...editingEvent, description: e.target.value })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="3"
+            placeholder="Brief description of the event..."
+          />
+        </div>
+        
+        <div>
+          <label className="flex items-center gap-2 text-sm" style={{ color: theme.text }}>
+            <input
+              type="checkbox"
+              checked={editingEvent?.highlight || false}
+              onChange={(e) => setEditingEvent({ ...editingEvent, highlight: e.target.checked })}
+              className="rounded"
+              style={{ accentColor: theme.accent }}
+            />
+            Highlight this event (makes it stand out in the timeline)
+          </label>
+        </div>
+      </div>
+      
+      <div className="flex gap-3 mt-6">
+        <button
+          onClick={handleSaveEvent}
+          className="px-4 py-2 rounded-lg text-white font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+          style={{ backgroundColor: theme.primary }}
+        >
+          <Save className="w-4 h-4" />
+          Save
+        </button>
+        <button
+          onClick={handleCancelEditEvent}
+          className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+
+  const InfoCard = ({ item, itemId }) => (
+    <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="flex justify-between items-start mb-3">
+        <h5 className="font-semibold text-lg" style={{ color: theme.text }}>{item.title}</h5>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleEditInfoItem({ ...item, id: itemId })}
+            className="p-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-colors"
+            title="Edit this information"
+          >
+            <Edit3 className="w-4 h-4 text-blue-600" />
+          </button>
+          <button
+            onClick={() => handleDeleteInfoItem(itemId)}
+            className="p-2 rounded-lg bg-red-100 hover:bg-red-200 transition-colors"
+            title="Delete this information"
+          >
+            <X className="w-4 h-4 text-red-600" />
+          </button>
+        </div>
+      </div>
+      <p className="text-sm" style={{ color: theme.textLight }}>{item.description}</p>
+    </div>
+  );
+
+  return (
+    <div className="space-y-8">
+      {/* Schedule Events Section */}
+      <div>
+        <h4 className="text-lg font-semibold mb-4" style={{ color: theme.primary }}>
+          Wedding Day Timeline
+        </h4>
+        <p className="text-sm mb-6" style={{ color: theme.textLight }}>
+          Create your wedding day schedule with events, times, and locations. Each card can be edited or removed individually.
+        </p>
+
+        {/* Add New Event Button */}
+        {!editingEvent && (
+          <button
+            onClick={handleAddEvent}
+            className="w-full py-3 mb-6 border-2 border-dashed rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+            style={{ borderColor: theme.primary, color: theme.primary }}
+          >
+            <Plus className="w-5 h-5" />
+            Add New Event
+          </button>
+        )}
+
+        {/* Event Form (Edit/Add) */}
+        {editingEvent && <EventForm />}
+
+        {/* Events List */}
+        <div className="space-y-4">
+          {scheduleEvents.length === 0 && !editingEvent ? (
+            <div className="text-center py-8">
+              <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+              <p className="text-gray-500">No events added yet</p>
+            </div>
+          ) : (
+            scheduleEvents.map((event, index) => (
+              <EventCard key={event.id || index} event={event} index={index} />
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Important Information Section */}
+      <div className="pt-6 border-t border-gray-200">
+        <h4 className="text-lg font-semibold mb-4" style={{ color: theme.primary }}>
+          Important Information
+        </h4>
+        <p className="text-sm mb-6" style={{ color: theme.textLight }}>
+          Add important information for your guests like dress code, weather plan, transportation, etc.
+        </p>
+
+        {/* Important Info Cards */}
+        <div className="grid md:grid-cols-2 gap-4 mb-6">
+          {/* Default info items */}
+          {defaultInfoItems.map((defaultItem) => {
+            const savedItem = importantInfo[defaultItem.id];
+            const item = savedItem || { title: defaultItem.title, description: defaultItem.description, enabled: true };
+            
+            return (
+              <InfoCard key={defaultItem.id} item={item} itemId={defaultItem.id} />
+            );
+          })}
+          
+          {/* Custom info items */}
+          {Object.entries(importantInfo).map(([itemId, item]) => {
+            if (!defaultInfoItems.find(d => d.id === itemId)) {
+              return (
+                <InfoCard key={itemId} item={item} itemId={itemId} />
+              );
+            }
+            return null;
+          })}
+        </div>
+
+        {/* Add New Info Button */}
+        <button
+          onClick={handleAddInfoItem}
+          className="w-full py-3 border-2 border-dashed rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+          style={{ borderColor: theme.primary, color: theme.primary }}
+        >
+          <Plus className="w-5 h-5" />
+          Add Custom Information
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const LeftSidebar = () => {
   const { themes, currentTheme } = useAppTheme();
   const theme = themes[currentTheme];
