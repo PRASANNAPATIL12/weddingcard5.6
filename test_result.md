@@ -102,7 +102,7 @@
 #====================================================================================================
 
 user_problem_statement: >
-  Clone GitHub repository (https://github.com/PRASANNAPATIL12/weddingcard5.6.git) using token 
+  Clone GitHub repository (https://github.com/PRASANNAPATIL12/weddingcard5.6.git) 
   create branch feat/rsvp, keep everything exactly as is from GitHub, build and run the application using provided MongoDB credentials.
   Implement enhanced RSVP admin dashboard with two sections (Joyfully accepts/Regretfully declines) showing expandable cards with guest details.
   Implement FAQ admin functionality allowing users to edit existing questions and add new FAQ entries with card-based design.
