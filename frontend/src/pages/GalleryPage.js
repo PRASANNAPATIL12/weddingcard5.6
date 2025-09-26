@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useAppTheme } from '../App';
+import { useUserData } from '../contexts/UserDataContext';
 import { X, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 
 const GalleryPage = () => {
   const { themes, currentTheme } = useAppTheme();
   const theme = themes[currentTheme];
+  const { weddingData } = useUserData();
   
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -12,67 +14,81 @@ const GalleryPage = () => {
   const categories = [
     { id: 'all', name: 'All Photos' },
     { id: 'engagement', name: 'Engagement' },
-    { id: 'travel', name: 'Our Travels' },
+    { id: 'travels', name: 'Our Travels' },
     { id: 'family', name: 'With Family' },
     { id: 'friends', name: 'With Friends' }
   ];
 
-  const photos = [
+  // Get photos from wedding data or use fallback photos if none are available
+  const galleryPhotos = weddingData?.gallery_photos || [];
+  
+  // Fallback photos if no photos are added yet
+  const fallbackPhotos = [
     {
-      id: 1,
-      src: "https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?w=800&h=600&fit=crop",
+      id: 'fallback1',
+      url: "https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?w=800&h=600&fit=crop",
       category: "engagement",
-      title: "Engagement Session"
+      title: "Engagement Session",
+      description: "A beautiful engagement photo session",
+      eventMessage: "The moment we knew we were meant to be together"
     },
     {
-      id: 2,
-      src: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&h=600&fit=crop",
-      category: "travel",
-      title: "Paris Adventure"
+      id: 'fallback2',
+      url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&h=600&fit=crop",
+      category: "travels",
+      title: "Paris Adventure",
+      description: "Our romantic trip to Paris",
+      eventMessage: "Exploring the city of love together"
     },
     {
-      id: 3,
-      src: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop",
+      id: 'fallback3',
+      url: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop",
       category: "engagement",
-      title: "Golden Hour"
+      title: "Golden Hour",
+      description: "Captured during golden hour",
+      eventMessage: "When the light was just perfect"
     },
     {
-      id: 4,
-      src: "https://images.unsplash.com/photo-1597248374161-426f3d6f1f6b?w=800&h=600&fit=crop",
-      category: "travel",
-      title: "Santorini Sunset"
+      id: 'fallback4',
+      url: "https://images.unsplash.com/photo-1597248374161-426f3d6f1f6b?w=800&h=600&fit=crop",
+      category: "travels",
+      title: "Santorini Sunset",
+      description: "Watching the sunset in Santorini",
+      eventMessage: "One of the most beautiful sunsets we've ever seen"
     },
     {
-      id: 5,
-      src: "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop",
+      id: 'fallback5',
+      url: "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop",
       category: "family",
-      title: "Family Gathering"
+      title: "Family Gathering",
+      description: "Special moment with family",
+      eventMessage: "Surrounded by the love of our families"
     },
     {
-      id: 6,
-      src: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&h=600&fit=crop",
+      id: 'fallback6',
+      url: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&h=600&fit=crop",
       category: "friends",
-      title: "With Our Gang"
-    },
-    {
-      id: 7,
-      src: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&h=600&fit=crop",
-      category: "engagement",
-      title: "Candid Moments"
-    },
-    {
-      id: 8,
-      src: "https://images.unsplash.com/photo-1594736797933-d0c4a30e71a0?w=800&h=600&fit=crop",
-      category: "travel",
-      title: "Beach Getaway"
-    },
-    {
-      id: 9,
-      src: "https://images.unsplash.com/photo-1606490194859-07c18c9f0968?w=800&h=600&fit=crop",
-      category: "engagement",
-      title: "The Proposal"
+      title: "With Our Gang",
+      description: "Fun times with friends",
+      eventMessage: "The friends who have been there through it all"
     }
   ];
+
+  const photos = galleryPhotos.length > 0 ? galleryPhotos.map(photo => ({
+    id: photo.id,
+    src: photo.url,
+    category: photo.category,
+    title: photo.title,
+    description: photo.description,
+    eventMessage: photo.eventMessage
+  })) : fallbackPhotos.map(photo => ({
+    id: photo.id,
+    src: photo.url,
+    category: photo.category,
+    title: photo.title,
+    description: photo.description,
+    eventMessage: photo.eventMessage
+  }));
 
   const filteredPhotos = selectedCategory === 'all' 
     ? photos 
