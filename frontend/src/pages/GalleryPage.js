@@ -184,6 +184,12 @@ const GalleryPage = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                   <h3 className="text-lg font-semibold mb-2">{photo.title}</h3>
+                  {photo.description && (
+                    <p className="text-sm mb-2 opacity-90">{photo.description}</p>
+                  )}
+                  {photo.eventMessage && (
+                    <p className="text-xs mb-3 italic opacity-80">"{photo.eventMessage}"</p>
+                  )}
                   <div className="flex items-center gap-2">
                     <Heart className="w-4 h-4" />
                     <span className="text-sm">Click to view</span>
